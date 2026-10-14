@@ -1,21 +1,19 @@
-# Build stage
+# Usa a imagem oficial do SDK do .NET 8 para compilar
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy solution and restore
-COPY . ./
-RUN dotnet restore ERPW.sln
+# Copia tudo da raiz (que agora é a pasta ERPW.Web)
+COPY . .
 
-# Publish the Blazor Server project
-RUN dotnet publish ERPW.Web/ERPW.Web.csproj -c Release -o /app/publish
+# Restaura e publica o projeto diretamente
+RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
-# Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+# Imagem final de runtime do .NET 8
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-ENV ASPNETCORE_URLS=http://+:80
+COPY --from=build /app/publish .
 
-COPY --from=build /app/publish ./
-
-EXPOSE 80
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
 
 ENTRYPOINT ["dotnet", "ERPW.Web.dll"]
