@@ -1,21 +1,111 @@
 @inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <nav>
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/consulta-cnpj">Consulta CNPJ</a></li>
-            </ul>
+<div class="app-layout">
+    <!-- Barra Lateral em Roxo Escuro -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-text">ERP Wendel</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="/" class="nav-icon-link" title="Home">
+                <i class="bi bi-house-door-fill"></i>
+            </a>
+            <a href="/consulta-cnpj" class="nav-icon-link active" title="Consulta CNPJ">
+                <i class="bi bi-person-badge-fill"></i>
+            </a>
+            <a href="#" class="nav-icon-link" title="Estoque">
+                <i class="bi bi-box-seam-fill"></i>
+            </a>
+            <a href="#" class="nav-icon-link" title="Documentos">
+                <i class="bi bi-file-earmark-text-fill"></i>
+            </a>
+            <a href="#" class="nav-icon-link" title="Configurações">
+                <i class="bi bi-gear-fill"></i>
+            </a>
         </nav>
-    </div>
-    <div class="main">
+        <div class="sidebar-footer">
+            <span class="version-text">0.0.1</span>
+        </div>
+    </aside>
+
+    <!-- Área Principal de Conteúdo -->
+    <main class="main-content">
         @Body
-    </div>
+    </main>
 </div>
 
 <style>
-.page { display:flex; }
-.sidebar { width:200px; background:#f5f5f5; padding:10px; }
-.main { flex:1; padding:16px; }
+    .app-layout {
+        display: flex;
+        height: 100vh;
+        background-color: #f7f5fa; /* Fundo levemente lilás/acinzentado claro */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        overflow: hidden;
+    }
+
+    /* Sidebar Roxo Escuro */
+    .sidebar {
+        width: 70px;
+        background-color: #2e1a47;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+        color: #ffffff;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    }
+
+    .sidebar-brand {
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 30px;
+        color: #d8b4fe; /* Lilás claro */
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        letter-spacing: 1px;
+    }
+
+    .sidebar-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        flex: 1;
+        align-items: center;
+    }
+
+    .nav-icon-link {
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #b8a3d9;
+        font-size: 1.2rem;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+        .nav-icon-link:hover {
+            background-color: #4a2874;
+            color: #ff8c42; /* Detalhe Laranja no hover */
+        }
+
+        .nav-icon-link.active {
+            background-color: #7c3aed; /* Lilás vibrante */
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+        }
+
+    .sidebar-footer {
+        font-size: 0.75rem;
+        color: #9ca3af;
+    }
+
+    .main-content {
+        flex: 1;
+        padding: 30px;
+        overflow-y: auto;
+    }
 </style>

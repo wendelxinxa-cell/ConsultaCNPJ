@@ -1,216 +1,306 @@
 @page "/consulta-cnpj"
 @using ERPW.Web.Models
 @inject HttpClient Http
-@inject IJSRuntime JS
-@using Microsoft.JSInterop
-@using Microsoft.AspNetCore.Components.Web
 
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-8">
-            <div class="card shadow-sm mb-3">
-                <div class="card-body">
-                    <h3 class="card-title mb-3">Consulta CNPJ</h3>
+<div class="consulta-container">
+    <h2 class="page-title">Consulta CNPJ</h2>
 
-                    <div class="input-group mb-3">
-                        <input id="cnpjInput" class="form-control form-control-lg" @bind="cnpj" placeholder="00.000.000/0000-00" maxlength="18" inputmode="numeric" @onkeydown="HandleKeyDown" />
-                        <button class="btn btn-primary" @onclick="Consultar">Consultar</button>
-                        <button class="btn btn-outline-secondary" @onclick="Limpar">Limpar</button>
-                    </div>
+    <!-- Campo de Busca com Botão Laranja Sobreposto -->
+    <div class="search-bar-container">
+        <div class="search-input-wrapper">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text"
+                   class="search-input"
+                   placeholder="Digite o CNPJ (ex: 00000000000191)..."
+                   @bind="cnpjBusca"
+                   @bind:event="oninput"
+                   @keyup="TratarKeyUp" />
 
-                    @if (loading)
-                    {
-                        <div class="d-flex align-items-center mb-2">
-                            <div class="spinner-border text-primary me-2" role="status"><span class="visually-hidden">Carregando...</span></div>
-                            <span class="text-muted">Consultando...</span>
-                        </div>
-                    }
+            <button class="btn-buscar-sobreposto" @onclick="ExecutarConsulta" disabled="@isCarregando">
+                @if (isCarregando)
+                {
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                }
+                else
+                {
+                    <span>Buscar</span>
+                }
+            </button>
+        </div>
+    </div>
 
-                </div>
+    @if (!string.IsNullOrEmpty(mensagemErro))
+    {
+        <div class="alert alert-danger text-center mb-4">
+            @mensagemErro
+        </div>
+    }
+
+    <!-- Painéis com Informações Retornadas -->
+    <div class="dashboard-grid">
+        <!-- Coluna Esquerda -->
+        <div class="grid-column">
+            <div class="info-card empresa-card">
+                <h3>Empresa</h3>
+                <div class="info-line"><strong>Razão Social:</strong> @GetRazaoSocial()</div>
+                <div class="info-line"><strong>Nome Fantasia:</strong> @GetNomeFantasia()</div>
+                <div class="info-line"><strong>CNPJ:</strong> @GetCnpj()</div>
+                <div class="info-line"><strong>Situação Cadastral:</strong> @GetSituacao()</div>
+            </div>
+
+            <div class="info-card">
+                <h3>Atividade Principal</h3>
+                <div class="info-line">@GetAtividade()</div>
+            </div>
+        </div>
+
+        <!-- Coluna Direita -->
+        <div class="grid-column">
+            <div class="info-card">
+                <h3>Endereço</h3>
+                <div class="info-line">@GetEndereco()</div>
+            </div>
+
+            <div class="info-card">
+                <h3>Contato</h3>
+                <div class="info-line"><strong>Telefone:</strong> @GetTelefone()</div>
+                <div class="info-line"><strong>Email:</strong> @GetEmail()</div>
+            </div>
+
+            <div class="info-card">
+                <h3>Inscrições Estaduais Ativas</h3>
+                <div class="info-line">@GetInscricaoEstadual()</div>
             </div>
         </div>
     </div>
 </div>
 
-@if (!string.IsNullOrEmpty(error))
-{
-    <div class="container"><div class="alert alert-danger">@error</div></div>
-}
-
-@if (empresa != null)
-{
-    <div class="container py-3">
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-10">
-                <div class="card mb-3 shadow-sm">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                                <h4 class="mb-0">@empresa.Estabelecimento?.NomeFantasia ?? empresa.RazaoSocial</h4>
-                                <small class="text-muted">@empresa.Estabelecimento?.CNPJ</small>
-                            </div>
-                            <div class="text-end">
-                                <span class="badge bg-info text-dark me-1">@empresa.Porte?.Descricao</span>
-                                <span class="badge bg-secondary">@empresa.Estabelecimento?.SituacaoCadastral</span>
-                            </div>
-                        </div>
-
-                        <div class="row mt-3">
-                            <div class="col-12 col-md-6">
-                                <h6>Contato</h6>
-                                <p class="mb-1"><strong>Telefone:</strong> @empresa.Estabelecimento?.Telefone1</p>
-                                <p class="mb-1"><strong>Email:</strong> @empresa.Estabelecimento?.Email</p>
-                                <p class="mb-1"><strong>Atividade:</strong> @empresa.Estabelecimento?.AtividadePrincipal?.Descricao</p>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <h6>Endereço</h6>
-                                <p class="mb-1">@EnderecoCompleto()</p>
-                                <div class="mt-2">
-                                    <a class="btn btn-sm btn-outline-primary me-2" target="_blank" href="https://www.google.com/maps/search/?api=1&query=@Uri.EscapeDataString(EnderecoCompleto())">Abrir no Maps</a>
-                                    <button class="btn btn-sm btn-outline-secondary" @onclick="CopyAddress">Copiar endereço</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                @if (empresa.Estabelecimento?.InscricoesEstaduais != null && empresa.Estabelecimento.InscricoesEstaduais.Any())
-                {
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h6 class="card-title">Inscrições Estaduais</h6>
-                            <ul class="mb-0">
-                                @foreach (var ie in empresa.Estabelecimento.InscricoesEstaduais)
-                                {
-                                    <li>@ie.Numero - @ie.Estado?.Sigla (@(ie.Ativo ? "Ativa" : "Inativa"))</li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                }
-
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6>JSON bruto</h6>
-                    <div>
-                        <button class="btn btn-sm btn-outline-secondary me-2" @onclick="ToggleRaw">@((showJson) ? "Ocultar JSON" : "Mostrar JSON")</button>
-                        <button class="btn btn-sm btn-outline-primary" @onclick="CopyJson">Copiar JSON</button>
-                    </div>
-                </div>
-
-                @if (showJson)
-                {
-                    <pre style="max-height:320px;overflow:auto;background:#f8f9fa;padding:12px;border-radius:4px;">@rawJson</pre>
-                }
-            </div>
-        </div>
-    </div>
-}
-
 @code {
-    private string cnpj = string.Empty;
-    private bool loading = false;
-    private Empresa? empresa;
-    private string? rawJson;
-    private string? error;
-    private bool showJson = false;
-    private bool maskInitialized = false;
+    private string cnpjBusca = "";
+    private bool isCarregando = false;
+    private string mensagemErro = "";
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await InitializeMask();
-        }
-    }
+    // Modelo simples de dados (Ajuste para integrar com seu serviço/API real)
+    private EmpresaModel dadosEmpresa = new();
 
-    private async Task InitializeMask()
-    {
-        if (maskInitialized) return;
-        try
-        {
-            await JS.InvokeVoidAsync("cnpjMask.applyById", "cnpjInput");
-        }
-        catch
-        {
-            // ignore JS initialization errors
-        }
-        maskInitialized = true;
-    }
-
-    private async Task Consultar()
-    {
-        error = null;
-        empresa = null;
-
-        var c = (cnpj ?? string.Empty).Replace(".", "").Replace("/", "").Replace("-", "").Trim();
-        if (string.IsNullOrEmpty(c) || c.Length != 14)
-        {
-            error = "Digite um CNPJ válido (14 dígitos).";
-            return;
-        }
-
-        loading = true;
-        try
-        {
-            var url = $"https://publica.cnpj.ws/cnpj/{c}";
-            var resp = await Http.GetAsync(url);
-            if (!resp.IsSuccessStatusCode)
-            {
-                error = $"Erro na consulta: {resp.StatusCode}";
-                return;
-            }
-
-            rawJson = await resp.Content.ReadAsStringAsync();
-            empresa = System.Text.Json.JsonSerializer.Deserialize<Empresa>(rawJson, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-        }
-        catch (Exception ex)
-        {
-            error = ex.Message;
-        }
-        finally
-        {
-            loading = false;
-        }
-    }
-
-    private void Limpar()
-    {
-        cnpj = string.Empty;
-        empresa = null;
-        rawJson = null;
-        error = null;
-    }
-
-    private async Task HandleKeyDown(KeyboardEventArgs e)
+    private async Task TratarKeyUp(KeyboardEventArgs e)
     {
         if (e.Key == "Enter")
         {
-            await Consultar();
+            await ExecutarConsulta();
         }
     }
 
-    private async Task CopyAddress()
+    private async Task ExecutarConsulta()
     {
-        if (empresa?.Estabelecimento == null) return;
-        var text = EnderecoCompleto();
-        await JS.InvokeVoidAsync("navigator.clipboard.writeText", text);
+        if (string.IsNullOrWhiteSpace(cnpjBusca))
+        {
+            mensagemErro = "Por favor, digite um CNPJ válido.";
+            return;
+        }
+
+        mensagemErro = "";
+        isCarregando = true;
+
+        try
+        {
+            // Chama a API pública usada pela versão desktop
+            var cnpjOnly = new string(cnpjBusca.Where(char.IsDigit).ToArray());
+            var url = $"https://publica.cnpj.ws/cnpj/{cnpjOnly}";
+            var resp = await Http.GetAsync(url);
+            if (!resp.IsSuccessStatusCode)
+            {
+                mensagemErro = $"Erro na consulta: {resp.StatusCode}";
+                return;
+            }
+
+            var json = await resp.Content.ReadAsStringAsync();
+            var apiEmpresa = System.Text.Json.JsonSerializer.Deserialize<Empresa>(json, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (apiEmpresa == null)
+            {
+                mensagemErro = "Resposta inválida da API.";
+                return;
+            }
+
+            dadosEmpresa = new EmpresaModel
+            {
+                RazaoSocial = apiEmpresa.RazaoSocial ?? "",
+                NomeFantasia = apiEmpresa.Estabelecimento?.NomeFantasia ?? "",
+                CnpjFormatted = apiEmpresa.Estabelecimento?.CNPJ ?? apiEmpresa.CnpjRaiz ?? cnpjBusca,
+                SituacaoCadastral = apiEmpresa.Estabelecimento?.SituacaoCadastral ?? "",
+                AtividadePrincipal = apiEmpresa.Estabelecimento?.AtividadePrincipal?.Descricao ?? "",
+                EnderecoCompleto = BuildEndereco(apiEmpresa.Estabelecimento),
+                Telefone = apiEmpresa.Estabelecimento?.Telefone1 ?? "",
+                Email = apiEmpresa.Estabelecimento?.Email ?? "",
+                InscricaoEstadual = (apiEmpresa.Estabelecimento?.InscricoesEstaduais != null && apiEmpresa.Estabelecimento.InscricoesEstaduais.Any()) ? string.Join(", ", apiEmpresa.Estabelecimento.InscricoesEstaduais.Select(i => i.Numero)) : ""
+            };
+        }
+        catch (Exception ex)
+        {
+            mensagemErro = $"Erro ao consultar CNPJ: {ex.Message}";
+        }
+        finally
+        {
+            isCarregando = false;
+        }
     }
 
-    private void ToggleRaw()
+    public class EmpresaModel
     {
-        showJson = !showJson;
+        public string RazaoSocial { get; set; } = "";
+        public string NomeFantasia { get; set; } = "";
+        public string CnpjFormatted { get; set; } = "";
+        public string SituacaoCadastral { get; set; } = "";
+        public string AtividadePrincipal { get; set; } = "";
+        public string EnderecoCompleto { get; set; } = "";
+        public string Telefone { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string InscricaoEstadual { get; set; } = "";
     }
 
-    private async Task CopyJson()
+    private string BuildEndereco(Estabelecimento? est)
     {
-        if (string.IsNullOrEmpty(rawJson)) return;
-        await JS.InvokeVoidAsync("navigator.clipboard.writeText", rawJson);
+        if (est == null) return string.Empty;
+        var parts = new List<string?> { est.Logradouro, est.Numero, est.Bairro, est.Cidade?.Nome, est.Estado?.Sigla, est.CEP };
+        return string.Join(", ", parts.Where(p => !string.IsNullOrEmpty(p)));
     }
 
-    private string EnderecoCompleto()
-    {
-        if (empresa?.Estabelecimento == null) return "-";
-        var e = empresa.Estabelecimento;
-        return $"{e.Logradouro}, {e.Numero} - {e.Bairro}, {e.Cidade?.Nome}/{e.Estado?.Sigla} - CEP: {e.CEP}";
-    }
+    // Helper getters to expose dadosEmpresa to the UI
+    private string GetRazaoSocial() => string.IsNullOrEmpty(dadosEmpresa.RazaoSocial) ? "-" : dadosEmpresa.RazaoSocial;
+    private string GetNomeFantasia() => string.IsNullOrEmpty(dadosEmpresa.NomeFantasia) ? "-" : dadosEmpresa.NomeFantasia;
+    private string GetCnpj() => string.IsNullOrEmpty(dadosEmpresa.CnpjFormatted) ? "-" : dadosEmpresa.CnpjFormatted;
+    private string GetSituacao() => string.IsNullOrEmpty(dadosEmpresa.SituacaoCadastral) ? "-" : dadosEmpresa.SituacaoCadastral;
+    private string GetAtividade() => string.IsNullOrEmpty(dadosEmpresa.AtividadePrincipal) ? "-" : dadosEmpresa.AtividadePrincipal;
+    private string GetEndereco() => string.IsNullOrEmpty(dadosEmpresa.EnderecoCompleto) ? "-" : dadosEmpresa.EnderecoCompleto;
+    private string GetTelefone() => string.IsNullOrEmpty(dadosEmpresa.Telefone) ? "-" : dadosEmpresa.Telefone;
+    private string GetEmail() => string.IsNullOrEmpty(dadosEmpresa.Email) ? "-" : dadosEmpresa.Email;
+    private string GetInscricaoEstadual() => string.IsNullOrEmpty(dadosEmpresa.InscricaoEstadual) ? "-" : dadosEmpresa.InscricaoEstadual;
 }
+
+<style>
+    .consulta-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .page-title {
+        text-align: center;
+        color: #2e1a47;
+        font-weight: 700;
+        margin-bottom: 25px;
+    }
+
+    /* Barra de Pesquisa com Botão Sobreposto */
+    .search-bar-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 35px;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+        width: 550px;
+        display: flex;
+        align-items: center;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 14px 130px 14px 45px; /* Espaço na direita para o botão sobreposto não tapar o texto */
+        border: 2px solid #e2d9f3;
+        border-radius: 12px;
+        background-color: #ffffff;
+        font-size: 1rem;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+        .search-input:focus {
+            border-color: #7c3aed;
+        }
+
+    .search-icon {
+        position: absolute;
+        left: 16px;
+        color: #7c3aed;
+        font-size: 1.1rem;
+    }
+
+    /* Botão Laranja Posição Absoluta (Sobreposto dentro do Input) */
+    .btn-buscar-sobreposto {
+        position: absolute;
+        right: 6px;
+        top: 6px;
+        bottom: 6px;
+        background-color: #ff6b35;
+        color: white;
+        border: none;
+        padding: 0 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .btn-buscar-sobreposto:hover {
+            background-color: #e85a24;
+        }
+
+        .btn-buscar-sobreposto:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+    /* Grelha de Painéis */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+
+    .grid-column {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .info-card {
+        background-color: #ede9fe;
+        border: 1px solid #ddd6fe;
+        border-radius: 16px;
+        padding: 22px;
+        box-shadow: 0 4px 6px rgba(46, 26, 71, 0.04);
+        min-height: 130px;
+        transition: transform 0.2s;
+    }
+
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(46, 26, 71, 0.08);
+        }
+
+    .empresa-card {
+        min-height: 220px;
+    }
+
+    .info-card h3 {
+        margin-top: 0;
+        font-size: 1.15rem;
+        color: #2e1a47;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #ddd6fe;
+        padding-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .info-line {
+        margin-bottom: 10px;
+        color: #4b3b65;
+        font-size: 0.95rem;
+    }
+</style>

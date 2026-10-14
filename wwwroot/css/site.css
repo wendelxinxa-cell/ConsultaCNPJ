@@ -20,3 +20,85 @@ pre {
     white-space: pre-wrap;
     word-wrap: break-word;
 }
+
+/* Modern theme tokens */
+:root{
+    --primary-500: #6c5ce7; /* violet */
+    --primary-600: #5a4bd6;
+    --accent-500: #00b894; /* green */
+    --muted-600: #6c757d;
+    --card-bg: #ffffff;
+}
+
+/* Card styling */
+.card {
+    border: none;
+    border-radius: 14px;
+}
+.card.shadow-sm {
+    box-shadow: 0 6px 18px rgba(38, 23, 84, 0.08);
+}
+
+/* Input */
+.form-control-lg {
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    border: 1px solid rgba(108,117,125,0.12);
+    background: linear-gradient(180deg, #fff, #fbfbff);
+    transition: box-shadow .18s ease, border-color .18s ease;
+}
+.form-control-lg:focus {
+    box-shadow: 0 6px 18px rgba(108,92,231,0.12);
+    border-color: var(--primary-500);
+    outline: none;
+}
+
+/* Rounded modern buttons */
+.btn-primary-custom{
+    background: linear-gradient(90deg,var(--primary-500),var(--primary-600));
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 0.55rem 1.05rem;
+    font-weight: 600;
+    box-shadow: 0 6px 18px rgba(108,92,231,0.18);
+    transition: transform .12s ease, box-shadow .12s ease;
+}
+.btn-primary-custom:hover{ transform: translateY(-2px); box-shadow: 0 10px 30px rgba(108,92,231,0.20); }
+
+.btn-secondary-custom-outline{
+    background: transparent;
+    color: var(--primary-600);
+    border: 1.8px solid rgba(90,75,214,0.12);
+    border-radius: 999px;
+    padding: 0.45rem 0.9rem;
+    font-weight: 600;
+}
+.btn-secondary-custom-outline:hover{ background: rgba(90,75,214,0.04); }
+
+.btn-ghost{
+    background: transparent;
+    border: none;
+    color: var(--muted-600);
+}
+
+.btn-sm.custom-pill{
+    border-radius: 999px;
+}
+
+/* Badges */
+.badge.custom-badge{
+    border-radius: 10px;
+    padding: .45em .6em;
+    font-weight: 600;
+}
+
+/* Responsive tweaks */
+@media (max-width: 576px){
+    .form-control-lg{ padding: .65rem .8rem; }
+    .card { border-radius: 12px; }
+}
+
+/* Small utility */
+.muted-small{ color: #6c757d; font-size: .9rem; }
+
