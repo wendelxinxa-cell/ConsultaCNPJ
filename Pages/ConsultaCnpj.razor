@@ -1,0 +1,119 @@
+@page "/consulta-cnpj"
+@using ERPW.Web.Models
+@inject HttpClient Http
+
+<h3>Consulta CNPJ</h3>
+
+<div class="mb-3">
+    <label for="cnpjInput" class="form-label">CNPJ</label>
+    <input id="cnpjInput" class="form-control" @bind="cnpj" />
+</div>
+
+<button class="btn btn-primary" @onclick="Consultar">Consultar</button>
+
+@if (loading)
+{
+    <p>Carregando...</p>
+}
+
+@if (empresa != null)
+{
+    <h5>Dados da Empresa</h5>
+    <div class="card p-3 mb-3">
+        <div><strong>Razão Social:</strong> @empresa.RazaoSocial</div>
+        <div><strong>Nome Fantasia:</strong> @empresa.Estabelecimento?.NomeFantasia</div>
+        <div><strong>CNPJ:</strong> @empresa.Estabelecimento?.CNPJ</div>
+        <div><strong>Situação:</strong> @empresa.Estabelecimento?.SituacaoCadastral</div>
+        <div><strong>Endereço:</strong> @EnderecoCompleto()</div>
+        <div><strong>Telefone:</strong> @empresa.Estabelecimento?.Telefone1</div>
+        <div><strong>Email:</strong> @empresa.Estabelecimento?.Email</div>
+        <div><strong>Atividade Principal:</strong> @empresa.Estabelecimento?.AtividadePrincipal?.Descricao</div>
+    </div>
+
+    @if (empresa.Estabelecimento?.InscricoesEstaduais != null)
+    {
+        <h6>Inscrições Estaduais</h6>
+        <ul>
+            @foreach (var ie in empresa.Estabelecimento.InscricoesEstaduais)
+            {
+                <li>@ie.Numero - @ie.Estado?.Sigla (@(ie.Ativo ? "Ativa" : "Inativa"))</li>
+            }
+        </ul>
+    }
+
+    <h6>JSON bruto</h6>
+    <pre style="max-height:240px;overflow:auto;background:#f8f9fa;padding:10px;border-radius:4px;">@rawJson</pre>
+}
+
+@if (error != null)
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+@using Microsoft.AspNetCore.Components.Web
+@code {
+    private string cnpj = string.Empty;
+    private bool loading = false;
+    private Empresa? empresa;
+    private string? rawJson;
+    private string? error;
+
+    private async Task Consultar()
+    {
+        error = null;
+        empresa = null;
+
+        var c = (cnpj ?? string.Empty).Replace(".", "").Replace("/", "").Replace("-", "").Trim();
+        if (string.IsNullOrEmpty(c) || c.Length != 14)
+        {
+            error = "Digite um CNPJ válido (14 dígitos).";
+            return;
+        }
+
+        loading = true;
+        try
+        {
+            var url = $"https://publica.cnpj.ws/cnpj/{c}";
+            var resp = await Http.GetAsync(url);
+            if (!resp.IsSuccessStatusCode)
+            {
+                error = $"Erro na consulta: {resp.StatusCode}";
+                return;
+            }
+
+            rawJson = await resp.Content.ReadAsStringAsync();
+            empresa = System.Text.Json.JsonSerializer.Deserialize<Empresa>(rawJson, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private void Limpar()
+    {
+        cnpj = string.Empty;
+        empresa = null;
+        rawJson = null;
+        error = null;
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await Consultar();
+        }
+    }
+
+    private string EnderecoCompleto()
+    {
+        if (empresa?.Estabelecimento == null) return "-";
+        var e = empresa.Estabelecimento;
+        return $"{e.Logradouro}, {e.Numero} - {e.Bairro}, {e.Cidade?.Nome}/{e.Estado?.Sigla} - CEP: {e.CEP}";
+    }
+}

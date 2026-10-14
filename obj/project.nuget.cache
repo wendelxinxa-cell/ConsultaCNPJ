@@ -1,0 +1,50 @@
+{
+  "version": 2,
+  "dgSpecHash": "leG7WyrUf+k=",
+  "success": true,
+  "projectFilePath": "D:\\PROJETO_WENDEL\\ERPW\\ERPW.Web\\ERPW.Web.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\POSTO\\.nuget\\packages\\microsoft.aspnetcore.authorization\\8.0.0\\microsoft.aspnetcore.authorization.8.0.0.nupkg.sha512",
+    "C:\\Users\\POSTO\\.nuget\\packages\\microsoft.aspnetcore.components\\8.0.0\\microsoft.aspnetcore.components.8.0.0.nupkg.sha512",
+    "C:\\Users\\POSTO\\.nuget\\packages\\microsoft.aspnetcore.components.analyzers\\8.0.0\\microsoft.aspnetcore.components.analyzers.8.0.0.nupkg.sha512",
+    "C:\\Users\\POSTO\\.nuget\\packages\\microsoft.aspnetcore.components.forms\\8.0.0\\microsoft.aspnetcore.components.forms.8.0.0.nupkg.sha512",
+    "C:\\Users\\POSTO\\.nuget\\packages\\microsoft.aspnetcore.components.web\\8.0.0\\microsoft.aspnetcore.components.web.8.0.0.nupkg.sha512",
+    "C:\\Users\\POSTO\\.nuget\\packages\\microsoft.aspnetcore.components.webassembly.server\\8.0.0\\microsoft.aspnetcore.components.webassembly.server.8.0.0.nupkg.sha512",
+    "C:\\Users\\POSTO\\.nuget\\packages\\microsoft.aspnetcore.metadata\\8.0.0\\microsoft.aspnetcore.metadata.8.0.0.nupkg.sha512",
+    "C:\\Users\\POSTO\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\8.0.0\\microsoft.extensions.dependencyinjection.8.0.0.nupkg.sha512",
+    "C:\\Users\\POSTO\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\POSTO\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.0\\microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\POSTO\\.nuget\\packages\\microsoft.extensions.options\\8.0.0\\microsoft.extensions.options.8.0.0.nupkg.sha512",
+    "C:\\Users\\POSTO\\.nuget\\packages\\microsoft.extensions.primitives\\8.0.0\\microsoft.extensions.primitives.8.0.0.nupkg.sha512",
+    "C:\\Users\\POSTO\\.nuget\\packages\\microsoft.jsinterop\\8.0.0\\microsoft.jsinterop.8.0.0.nupkg.sha512",
+    "C:\\Users\\POSTO\\.nuget\\packages\\npgsql\\7.0.0\\npgsql.7.0.0.nupkg.sha512",
+    "C:\\Users\\POSTO\\.nuget\\packages\\system.io.pipelines\\8.0.0\\system.io.pipelines.8.0.0.nupkg.sha512",
+    "C:\\Users\\POSTO\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "O pacote 'Microsoft.AspNetCore.Components.WebAssembly.Server' 8.0.0 tem uma alta vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-qjpx-jqm5-h2c4",
+      "projectPath": "D:\\PROJETO_WENDEL\\ERPW\\ERPW.Web\\ERPW.Web.csproj",
+      "warningLevel": 1,
+      "filePath": "D:\\PROJETO_WENDEL\\ERPW\\ERPW.Web\\ERPW.Web.csproj",
+      "libraryId": "Microsoft.AspNetCore.Components.WebAssembly.Server",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "O pacote 'Npgsql' 7.0.0 tem uma alta vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-x9vc-6hfv-hg8c",
+      "projectPath": "D:\\PROJETO_WENDEL\\ERPW\\ERPW.Web\\ERPW.Web.csproj",
+      "warningLevel": 1,
+      "filePath": "D:\\PROJETO_WENDEL\\ERPW\\ERPW.Web\\ERPW.Web.csproj",
+      "libraryId": "Npgsql",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    }
+  ]
+}
