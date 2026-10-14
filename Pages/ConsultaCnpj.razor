@@ -263,6 +263,18 @@
         gap: 24px;
     }
 
+    /* On small screens, stack cards vertically */
+    @@media (max-width: 768px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .search-input-wrapper { width: 100%; }
+        .search-input { padding: 12px 110px 12px 45px; }
+        .search-bar-container { padding: 0 12px; }
+    }
+
     .grid-column {
         display: flex;
         flex-direction: column;

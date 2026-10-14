@@ -102,3 +102,17 @@ pre {
 /* Small utility */
 .muted-small{ color: #6c757d; font-size: .9rem; }
 
+/* Responsive behavior for sidebar and ConsultaCnpj layout moved here to avoid Razor parsing issues */
+@media (max-width: 768px) {
+    /* Hide sidebar and make main content full width */
+    .app-layout { flex-direction: column !important; height: auto !important; overflow: visible !important; }
+    .sidebar { display: none !important; }
+    .main-content { padding: 16px !important; height: auto !important; overflow: visible !important; }
+
+    /* ConsultaCnpj grid -> single column */
+    .dashboard-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+    .search-input-wrapper { width: 100% !important; }
+    .search-input { padding: 12px 110px 12px 45px !important; }
+    .search-bar-container { padding: 0 12px !important; }
+}
+
