@@ -42,3 +42,5 @@ D:\PROJETO_WENDEL\ERPW\ERPW.Web\obj\Debug\net8.0\ERPW.Web.pdb
 D:\PROJETO_WENDEL\ERPW\ERPW.Web\obj\Debug\net8.0\ERPW.Web.genruntimeconfig.cache
 D:\PROJETO_WENDEL\ERPW\ERPW.Web\obj\Debug\net8.0\ref\ERPW.Web.dll
 D:\PROJETO_WENDEL\ERPW\ERPW.Web\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+D:\PROJETO_WENDEL\ERPW\ERPW.Web\obj\Debug\net8.0\ERPW.Web.sourcelink.json
+D:\PROJETO_WENDEL\ERPW\ERPW.Web\bin\Debug\net8.0\ERPW.Web.staticwebassets.runtime.json

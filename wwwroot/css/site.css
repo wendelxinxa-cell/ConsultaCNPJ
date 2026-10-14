@@ -1,0 +1,22 @@
+/* Custom styles for Consulta CNPJ page */
+body {
+    background: #f5f7fb;
+}
+
+.card-title {
+    font-weight: 600;
+}
+
+.card .badge {
+    font-size: 0.85rem;
+}
+
+.input-group .form-control-lg {
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+}
+
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
